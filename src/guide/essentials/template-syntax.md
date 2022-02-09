@@ -1,28 +1,32 @@
-# Template Syntax
+# 模板语法 {#template-syntax}
 
-Vue uses an HTML-based template syntax that allows you to declaratively bind the rendered DOM to the underlying component instance's data. All Vue templates are syntactically valid HTML that can be parsed by spec-compliant browsers and HTML parsers.
+Vue 使用一种基于 HTML 的模板语法，使开发者可以声明式地将已渲染的 DOM 绑定到底层组件实例的数据。所有 Vue 的模板都是合法的 HTML，能被与标准兼容的浏览器或 HTML 解析器解析。
 
-Under the hood, Vue compiles the templates into highly-optimized JavaScript code. Combined with the reactivity system, Vue is able to intelligently figure out the minimal number of components to re-render and apply the minimal amount of DOM manipulations when the app state changes.
+Vue 会在底层将模板编译成高度优化后的 JavaScript 代码，结合响应式系统，当应用的状态改变时，Vue 能智能地计算出需要重新渲染的组件的最小数量，并在执行最少次数的 DOM 操作。
 
-If you are familiar with Virtual DOM concepts and prefer the raw power of JavaScript, you can also [directly write render functions](/guide/extras/render-function.html) instead of templates, with optional JSX support. However, do note that they do not enjoy the same level of compile-time optimizations as templates.
+如果你熟悉虚拟 DOM 概念并偏好原生 JavaScript 的能力，你可以不用模板，[直接写渲染函数](/guide/extras/render-function.html)，选用 JSX 语法。但请注意它们并不与模板共享相同级别的编译时优化。
 
-## Text Interpolation
+## 文本插值 {#text-interpolation}
 
-The most basic form of data binding is text interpolation using the "Mustache" syntax (double curly braces):
+最基础的数据绑定形式是用 "Mustache" 语法(即双大括号)<sup>[[1]](#footnote-1)</sup>进行文本插值操作：
 
 ```vue-html
 <span>Message: {{ msg }}</span>
 ```
 
-The mustache tag will be replaced with the value of the `msg` property from the corresponding component instance. It will also be updated whenever the `msg` property changes.
+mustache 标签中的内容会被替换成对应组件实例上的 `msg` 属性的值，无论何时`msg` 属性发生变化，插值处的内容会同步更新。
 
-## Raw HTML
+<small>
+<div id="footnote-1">[1] Mustache 是一种轻逻辑的模板语法，用于创建动态内容，如 HTML、配置文件等。它有不同语言的实现，参考 js 的实现 [mustache.js](https://github.com/janl/mustache.js/)。</div>
+</small>
 
-The double mustaches interprets the data as plain text, not HTML. In order to output real HTML, you will need to use the [`v-html` directive](/api/built-in-directives.html#v-html):
+## 原生 HTML {#raw-html}
+
+双大括号会把里面的数据当作纯文本而不是 HTML 处理，如果要输出真正的 HTML，需要使用[`v-html` 指令](/api/built-in-directives.html#v-html):
 
 ```vue-html
-<p>Using text interpolation: {{ rawHtml }}</p>
-<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+<p>使用文本插值: {{ rawHtml }}</p>
+<p>使用 v-html 指令: <span v-html="rawHtml"></span></p>
 ```
 
 <script setup>
@@ -30,55 +34,61 @@ The double mustaches interprets the data as plain text, not HTML. In order to ou
 </script>
 
 <div class="demo">
-  <p>Using text interpolation: {{ rawHtml }}</p>
-  <p>Using v-html directive: <span v-html="rawHtml"></span></p>
+  <p>使用文本插值: {{ rawHtml }}</p>
+  <p>使用 v-html 指令: <span v-html="rawHtml"></span></p>
 </div>
 
-Here we're encountering something new. The `v-html` attribute you're seeing is called a **directive**. Directives are prefixed with `v-` to indicate that they are special attributes provided by Vue, and as you may have guessed, they apply special reactive behavior to the rendered DOM. Here, we're basically saying "keep this element's inner HTML up-to-date with the `rawHtml` property on the current active instance."
+这里出现了些新东西，这个 `v-html` 属性叫做 **指令**， 指令是 Vue 提供的以 `v-` 开头的特殊属性，你可能可以猜到，它们对渲染出来的 DOM 施加特殊的响应式行为。这里我们做的事情是：将 span 元素的 innerHTML 属性的值与当前活跃实例的 `rawHtml` 属性保持一致。
 
-The contents of the `span` will be replaced with the value of the `rawHtml` property, interpreted as plain HTML - data bindings are ignored. Note that you cannot use `v-html` to compose template partials, because Vue is not a string-based templating engine. Instead, components are preferred as the fundamental unit for UI reuse and composition.
+`span` 元素的内容会被替换为 `rawHtml` 属性的值，插值为纯 HTML，数据绑定将会被忽略。注意你不能通过拼接 `v-html` 来组合出一个模板来，因为 Vue 不是基于字符串的模板引擎，应该使用组件作为 UI 重用和组合的基本单元。
 
-:::warning Security Warning
-Dynamically rendering arbitrary HTML on your website can be very dangerous because it can easily lead to [XSS vulnerabilities](https://en.wikipedia.org/wiki/Cross-site_scripting). Only use `v-html` on trusted content and **never** on user-provided content.
+:::warning 安全警告
+将任意 HTML 动态渲染到你的网站上是非常危险的，这非常容易造成 [XSS 漏洞](https://en.wikipedia.org/wiki/Cross-site_scripting)。只对受信的内容使用 `v-html`，**绝对不要**将它用在用户输入的内容上。
 :::
 
-## Attribute Bindings
+## 属性的绑定 {#attribute-bindings}
 
-Mustaches cannot be used inside HTML attributes. Instead, use a [`v-bind` directive](/api/built-in-directives.html#v-bind):
+Mustaches 语法无法作用到 HTML 属性上，遇到这种情况使用 [`v-bind` 指令](/api/built-in-directives.html#v-bind):
 
 ```vue-html
 <div v-bind:id="dynamicId"></div>
 ```
 
-The `v-bind` directive instructs Vue to keep the element's `id` attribute in sync with the component's `dynamicId` property. If the bound value is `null` or `undefined`, then the attribute will be removed from the rendered element.
+`v-bind` 指令告诉 Vue 将 div 元素的 `id` 属性和组件的 `dynamicId` 属性的值保持一致。如果所绑订的值是 `null` 或 `undefined`, 则 `id` 属性会从最终渲染出来的元素中移除。
 
-### Shorthand
+### 缩写 {#shorthand}
 
-Because `v-bind` is so commonly used, it has a dedicated shorthand syntax:
+由于 `v-bind` 特别常用，它有特定的缩写语法：
 
 ```vue-html
 <div :id="dynamicId"></div>
 ```
 
-Attributes that start with `:` may look a bit different from normal HTML, but it is in fact a valid character for attribute names and all Vue-supported browsers can parse it correctly. In addition, they do not appear in the final rendered markup. The shorthand syntax is optional, but you will likely appreciate it when you learn more about its usage later.
+以 `:` 开头的属性看起来和一般的 HTML 属性不同，但它也是合法的 HTML 属性名，能被所有支持 Vue 的浏览器正确解析。此外，它们不会出现在最终渲染出来的标签中。缩写语法是可选的，随着你深入了解它的作用，你会庆幸拥有它。
 
-> For the rest of the guide, we will be using the shorthand syntax in code examples, as that's the most common usage for Vue developers.
+> 在接下来的指南中，我们将在示例代码中使用缩写语法，这也是大多数 Vue 开发者的用法。
 
-### Boolean Attributes
+### 布尔值属性 {#boolean-attributes}
 
-[Boolean attributes](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes) are attributes that can indicate true / false values by its presence on an element. For example, [`disabled`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) is one of the most commonly used boolean attributes.
+[布尔值属性](https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#boolean-attributes) 是通过其在元素上的出现与否来表示值为 true / false 的属性<sup>[[2]](#footnote-2)</sup>。例如, [`disabled`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) 是最常用的布尔值属性之一。
 
-`v-bind` works a bit differently in this case:
+`v-bind` 的使用有一点不同：
 
 ```vue-html
 <button :disabled="isButtonDisabled">Button</button>
 ```
 
-The `disabled` attribute will be included if `isButtonDisabled` has a [truthy value](https://developer.mozilla.org/en-US/docs/Glossary/Truthy). It will also be included if the value is an empty string, maintaining consistency with `<button disabled="">`. For other falsy values the attribute will be omitted.
+如果 `isButtonDisabled` 的值为 [真值](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)或空字符串(即 `<button disabled="">`)时，`disabled` 属性会出现在元素上<sup>[[3]](#footnote-3)</sup>，如果它的值为假值，则 `disabled` 会被忽略。
 
-### Dynamically Binding Multiple Attributes
+<small>
+译者注：
+<div id="footnote-2">[2] 出现该属性表示该属性的值为 true</div>
+<div id="footnote-3">[3] 同时 <button /> 上出现 disabled 表示该标签的 disabled 属性为 true</div>
+</small>
 
-If you have a JavaScript object representing multiple attributes that looks like this:
+### 动态绑定多个属性 {#dynamically-binding-multiple-attributes}
+
+如果你想用一个 JavaScript 对象来表示多个属性，如：
 
 <div class="composition-api">
 
@@ -105,14 +115,15 @@ data() {
 
 </div>
 
-You can bind them to a single element by using `v-bind` without an argument:
+你可以用不带参数的 `v-bind` 把它们绑定到一个元素上：
 
 ```vue-html
 <div v-bind="objectOfAttrs"></div>
 ```
 
-## Using JavaScript Expressions
+## 使用 JavaScript 表达式 {#using-javascript-expressions}
 
+目前为止我们仅
 So far we've only been binding to simple property keys in our templates. But Vue actually supports the full power of JavaScript expressions inside all data bindings:
 
 ```vue-html
@@ -268,3 +279,4 @@ And finally, here's the full directive syntax visualized:
 ![directive syntax graph](./images/directive.png)
 
 <!-- https://www.figma.com/file/BGWUknIrtY9HOmbmad0vFr/Directive -->
+
