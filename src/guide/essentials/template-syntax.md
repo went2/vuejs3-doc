@@ -123,8 +123,7 @@ data() {
 
 ## 使用 JavaScript 表达式 {#using-javascript-expressions}
 
-目前为止我们仅
-So far we've only been binding to simple property keys in our templates. But Vue actually supports the full power of JavaScript expressions inside all data bindings:
+目前为止我们仅在模板中绑定了一些简单的属性，但 Vue 支持在任何数据绑定的地方使用 JavaScript 表达式。
 
 ```vue-html
 {{ number + 1 }}
@@ -136,28 +135,28 @@ So far we've only been binding to simple property keys in our templates. But Vue
 <div :id="`list-${id}`"></div>
 ```
 
-These expressions will be evaluated as JavaScript in the data scope of the current component instance.
+这些表达式会被当作 JavaScript，在当前组件实例的作用域中计算。
 
-In Vue templates, JavaScript expressions can be used in the following positions:
+在 Vue 模板中，JavaScript 表达式可用在以下地方：
 
-- Inside text interpolations (mustaches)
-- In the attribute value of any Vue directives (special attributes that start with `v-`)
+- 在文本插值的中(mustaches 标签内)
+- 在任何以 `v-` 开头的 Vue 指令绑定的属性值上
 
-### Expressions Only
+### 使用表达式而非语句 {#expressions-only}
 
-Each binding can only contain **one single expression**, so the following will **NOT** work:
+每个绑定只支持 **单一表达式**，下面的示例是 **无效** 的：
 
 ```vue-html
-<!-- this is a statement, not an expression: -->
+<!-- 这是一个语句，而非表达式 -->
 {{ var a = 1 }}
 
-<!-- flow control won't work either, use ternary expressions -->
+<!-- 条件控制同样无效，请使用三元表达式 -->
 {{ if (ok) { return message } }}
 ```
 
-### Calling Functions
+### 调用函数 {#calling-functions}
 
-It is possible to call a component-exposed method inside a binding expression:
+在写绑定的表达式的地方可以调用组件暴露的方法：
 
 ```vue-html
 <span :title="toTitleDate(date)">
@@ -166,59 +165,59 @@ It is possible to call a component-exposed method inside a binding expression:
 ```
 
 :::tip
-Functions called inside binding expressions will be called every time the component updates, so they should **not** have any side effects, such as changing data or triggering asynchronous operations.
+绑定的表达式中的函数调用，在每次组件更新后都会重新调用，因此 **不应该** 有任何副作用，如改变数据或触发异步操作。
 :::
 
-### Restricted Globals Access
+### 有限的全局访问 {#restricted-globals-access}
 
-Template expressions are sandboxed and only have access to a [restricted list of globals](https://github.com/vuejs/core/blob/main/packages/shared/src/globalsWhitelist.ts#L3). The list exposes commonly used built-in globals such as `Math` and `Date`.
+模板中的表达式将被沙盒化，仅能够访问到 [有限的全局对象列表](https://github.com/vuejs/core/blob/main/packages/shared/src/globalsWhitelist.ts#L3)。该列表中通常会暴露内置全局对象，比如 `Math` 和 `Date`。
 
-Globals not explicitly included in the list, for example user-attached properties on `window`, will not be accessible in template expressions. You can, however, explicitly define additional globals for all Vue expressions by adding them to [`app.config.globalProperties`](/api/application.html#app-config-globalproperties).
+没有显式包含在列表中的全局对象在模板内表达式内不可访问，例如用户附加在 `window` 上的属性。如果你确定要这样做，可以自行在 [`app.config.globalProperties`](/api/application.html#app-config-globalproperties)上显式地添加他们，供所有 Vue 表达式使用。
 
-## Directives
+## 指令 {#directives}
 
-Directives are special attributes with the `v-` prefix. Vue provides a number of [built-in directives](/api/built-in-directives.html), including `v-html` and `v-bind` which we have introduced above.
+指令是带有 `v-` 前缀的特殊 attribute。Vue 提供了许多 [内置指令](/api/built-in-directives.html)，包括上面我们介绍到的 `v-bind`。
 
-Directive attribute values are expected to be single JavaScript expressions (with the exception of `v-for`, `v-on` and `v-slot`, which will be discussed in their respective sections later). A directive's job is to reactively apply updates to the DOM when the value of its expression changes. Take [`v-if`](/api/built-in-directives.html#v-if) as an example:
+指令属性的值是纯 JavaScript 表达式 （之后要讨论到的 `v-for` 和 `v-on` 将会是例外）。指令的热任务是在其表达式的值改变后响应式更新 DOM。以 [`v-if`](/api/built-in-directives.html#v-if) 为例：
 
 ```vue-html
 <p v-if="seen">Now you see me</p>
 ```
 
-Here, the `v-if` directive would remove / insert the `<p>` element based on the truthiness of the value of the expression `seen`.
+这里， `v-if` 指令将基于表达式 `seen` 值的真假来移除 / 插入 `<p>` 元素。
 
-### Arguments
+### 指令的参数 {#arguments}
 
-Some directives can take an "argument", denoted by a colon after the directive name. For example, the `v-bind` directive is used to reactively update an HTML attribute:
+有的指令能接收一个“参数”，在指令名后通过一个冒号隔开做标识。例如 `v-bind` 指令被用来响应式的更新一个 HTML 属性：
 
 ```vue-html
 <a v-bind:href="url"> ... </a>
 
-<!-- shorthand -->
+<!-- 缩写 -->
 <a :href="url"> ... </a>
 ```
 
-Here `href` is the argument, which tells the `v-bind` directive to bind the element's `href` attribute to the value of the expression `url`. In the shorthand, everything before the argument (i.e. `v-bind:`) is condensed into a single character, `:`.
+这里 `href` 就是一个参数，它告诉 `v-bind` 指令绑定表达式值 `url` 到元素的 `href` attribute 上。在缩写中，参数前的一切（例如 `v-bind:`）都会被缩略为一个 `:` 字符。
 
-Another example is the `v-on` directive, which listens to DOM events:
+另一个例子是 `v-on` 指令，它将监听 DOM 事件：
 
 ```vue-html
 <a v-on:click="doSomething"> ... </a>
 
-<!-- shorthand -->
+<!-- 缩写 -->
 <a @click="doSomething"> ... </a>
 ```
 
-Here the argument is the event name to listen to: `click`. `v-on` is one of the few directives that also have a corresponding shorthand, with its shorthand character being `@`. We will talk about event handling in more detail too.
+这里的参数是要监听的事件名称：`click`。`v-on` 是少数拥有缩写的指令之一，缩写为 `@`。我们之后也会讨论更多事件处理的细节。
 
-### Dynamic Arguments
+### 动态参数 {#dynamic-arguments}
 
-It is also possible to use a JavaScript expression in a directive argument by wrapping it with square brackets:
+指令参数也可以使用一个 JavaScript 表达式，用一对方括号包起来：
 
 ```vue-html
 <!--
-Note that there are some constraints to the argument expression,
-as explained in the "Dynamic Argument Expression Constraints" section below.
+注意，参数表达式有一些约束，
+参见下面 “动态参数表达式约束” 一节的解释
 -->
 <a v-bind:[attributeName]="url"> ... </a>
 
@@ -226,7 +225,7 @@ as explained in the "Dynamic Argument Expression Constraints" section below.
 <a :[attributeName]="url"> ... </a>
 ```
 
-Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. For example, if your component instance has a data property, `attributeName`, whose value is `"href"`, then this binding will be equivalent to `v-bind:href`.
+这里的 `attributeName` 会作为一个 JavaScript 表达式被动态执行，计算得到的值会被用作最终的参数。举个例子，如果你的组件实例有一个数据属性 `attributeName`，其值为 `"href"`，那么这个绑定就等价于 `v-bind:href`。Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. For example, if your component instance has a data property, `attributeName`, whose value is `"href"`, then this binding will be equivalent to `v-bind:href`.
 
 Similarly, you can use dynamic arguments to bind a handler to a dynamic event name:
 
