@@ -46,7 +46,7 @@ mustache 标签中的内容会被替换成对应组件实例上的 `msg` 属性�
 将任意 HTML 动态渲染到你的网站上是非常危险的，这非常容易造成 [XSS 漏洞](https://en.wikipedia.org/wiki/Cross-site_scripting)。只对受信的内容使用 `v-html`，**绝对不要**将它用在用户输入的内容上。
 :::
 
-## 属性的绑定 {#attribute-bindings}
+## 绑定属性 {#attribute-bindings}
 
 Mustaches 语法无法作用到 HTML 属性上，遇到这种情况使用 [`v-bind` 指令](/api/built-in-directives.html#v-bind):
 
@@ -142,7 +142,7 @@ data() {
 - 在文本插值的中(mustaches 标签内)
 - 在任何以 `v-` 开头的 Vue 指令绑定的属性值上
 
-### 使用表达式而非语句 {#expressions-only}
+### 要用表达式而非语句 {#expressions-only}
 
 每个绑定只支持 **单一表达式**，下面的示例是 **无效** 的：
 
@@ -221,61 +221,89 @@ data() {
 -->
 <a v-bind:[attributeName]="url"> ... </a>
 
-<!-- shorthand -->
+<!-- 缩写 -->
 <a :[attributeName]="url"> ... </a>
 ```
 
-这里的 `attributeName` 会作为一个 JavaScript 表达式被动态执行，计算得到的值会被用作最终的参数。举个例子，如果你的组件实例有一个数据属性 `attributeName`，其值为 `"href"`，那么这个绑定就等价于 `v-bind:href`。Here `attributeName` will be dynamically evaluated as a JavaScript expression, and its evaluated value will be used as the final value for the argument. For example, if your component instance has a data property, `attributeName`, whose value is `"href"`, then this binding will be equivalent to `v-bind:href`.
+这里的 `attributeName` 会作为 JavaScript 表达式动态执行，计算得到的值会用作最终的参数。举个例子，如果你的组件实例有一个数据属性 `attributeName`，其值为 `"href"`，那么这个绑定就等价于 `v-bind:href`。
 
-Similarly, you can use dynamic arguments to bind a handler to a dynamic event name:
+同样的道理，你也可以将一个事件处理器绑定到一个动态的事件名上<sup>[[4]](#footnote-4)</sup>：
 
 ```vue-html
 <a v-on:[eventName]="doSomething"> ... </a>
 
-<!-- shorthand -->
+<!-- 缩写 -->
 <a @[eventName]="doSomething">
 ```
 
-In this example, when `eventName`'s value is `"focus"`, `v-on:[eventName]` will be equivalent to `v-on:focus`.
+当示例中的 `eventName` 值是 `"focus"`，`v-on:[eventName]` 相当于 `v-on:focus`。
 
-#### Dynamic Argument Value Constraints
+<small>
+译者注：
+<div id="footnote-4">[4] 这样实现的效果是 <a/> 标签被监听的事件会在运行时改变，但事件处理器都是同一个。</div>
+</small>
 
-Dynamic arguments are expected to evaluate to a string, with the exception of `null`. The special value `null` can be used to explicitly remove the binding. Any other non-string value will trigger a warning.
+#### 对动态参数值的限制 {#dynamic-argument-syntax-constraints}
 
-#### Dynamic Argument Syntax Constraints
+动态参数的值应该是一个字符串，或是 `null`，特殊值 `null` 用于显式地移除事件绑定，除此以外的任何非字符串值都将触发警告。
 
-Dynamic argument expressions have some syntax constraints because certain characters, such as spaces and quotes, are invalid inside HTML attribute names. For example, the following is invalid:
+#### 对动态参数语法的限制 {#dynamic-argument-syntax-constraints}
+
+动态参数表达式还有一些语法限制，因为某些字符如空格、引号等，不能用在 HTML 属性名中，下面的示例就是不合法的：
 
 ```vue-html
-<!-- This will trigger a compiler warning. -->
+<!-- 这会触发一个编译器警告 -->
 <a :['foo' + bar]="value"> ... </a>
 ```
 
-If you need to pass a complex dynamic argument, it's probably better to use to a [computed property](./computed.html), which we will cover shortly.
+如果你想传入一个复杂的动态参数，我们推荐使用[计算属性](./computed.html)，我们很快就会讲到它。
 
-When using in-DOM templates (templates directly written in an HTML file), you should also avoid naming keys with uppercase characters, as browsers will coerce attribute names into lowercase:
+当使用 DOM 内嵌模板（直接写在 HTML 文件里的模板）时，需要避免在名称中使用大写字母，因为浏览器会强制将其转换为小写：
 
 ```vue-html
 <a :[someAttr]="value"> ... </a>
 ```
+上面的例子将会在 DOM 内嵌模板中被转换为 `:[someattr]`。
+如果你的组件只有 “someAttr” 属性没有 “someattr”，这个绑定就会失效。
 
-The above will be converted to `:[someattr]` in in-DOM templates.
-If your component has a "someAttr" property instead of "someattr",
-your code won't work.
+### 修饰符 {#modifiers}
 
-### Modifiers
-
-Modifiers are special postfixes denoted by a dot, which indicate that a directive should be bound in some special way. For example, the `.prevent` modifier tells the `v-on` directive to call `event.preventDefault()` on the triggered event:
+修饰符是以点开头的特殊后缀，表明指令在绑定时需要执行一些特殊的操作。例如 `.prevent` 修饰符会告知 `v-on` 指令对触发的事件调用 `event.preventDefault()`：
 
 ```vue-html
 <form @submit.prevent="onSubmit">...</form>
 ```
 
-You'll see other examples of modifiers later, [for `v-on`](./event-handling.html#event-modifiers) and [for `v-model`](./forms.html#modifiers), when we explore those features.
+之后在介绍 [`v-on`](./event-handling.html#event-modifiers) 和 [`v-model`](./forms.html#modifiers) 的功能时，会有其他修饰符的例子。
 
-And finally, here's the full directive syntax visualized:
+最后，在这里你可以直观地看到完整的指令语法：
 
 ![directive syntax graph](./images/directive.png)
 
 <!-- https://www.figma.com/file/BGWUknIrtY9HOmbmad0vFr/Directive -->
+
+## 小结
+
+- 概念级别
+
+```
+模板语法
+├─ 文本插值
+├─ 原生HTML
+├─ 绑定属性
+│  ├─ 缩写
+│  └─ 布尔值属性
+│  └─ 动态绑定多个属性
+├─ 使用 JavaScript 表达式
+│  ├─ 要用表达式而非语句
+│  └─ 调用函数
+│  └─ 有限的全局访问
+├─ 指令
+│  ├─ 指令的参数
+│  └─ 动态参数
+│     ├─ 对动态参数值的限制
+│     ├─ 对动态参数语法的限制
+│  └─ 修饰符
+```
+
 
