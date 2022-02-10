@@ -1,6 +1,6 @@
 # 模板语法 {#template-syntax}
 
-Vue 使用一种基于 HTML 的模板语法，使开发者可以声明式地将已渲染的 DOM 绑定到底层组件实例的数据。所有 Vue 的模板都是合法的 HTML，能被与标准兼容的浏览器或 HTML 解析器解析。
+Vue 使用一种基于 HTML 的模板语法，开发者可以声明式地将已渲染的 DOM 绑定到底层组件实例的数据。所有 Vue 的模板都是合法的 HTML，能被与标准兼容的浏览器或 HTML 解析器解析。
 
 Vue 会在底层将模板编译成高度优化后的 JavaScript 代码，结合响应式系统，当应用的状态改变时，Vue 能智能地计算出需要重新渲染的组件的最小数量，并在执行最少次数的 DOM 操作。
 
@@ -17,12 +17,12 @@ Vue 会在底层将模板编译成高度优化后的 JavaScript 代码，结合�
 mustache 标签中的内容会被替换成对应组件实例上的 `msg` 属性的值，无论何时`msg` 属性发生变化，插值处的内容会同步更新。
 
 <small>
-<div id="footnote-1">[1] Mustache 是一种轻逻辑的模板语法，用于创建动态内容，如 HTML、配置文件等。它有不同语言的实现，参考 js 的实现 [mustache.js](https://github.com/janl/mustache.js/)。</div>
+<div id="footnote-1">[1] Mustache 是一种轻逻辑的模板语法，用于创建动态内容，如 HTML、配置文件等。它有不同语言的实现，参考 js 的实现 [mustache.js](https://github.com/janl/mustache.js/)。后面提到的 mustache 都用“双大括号”替代</div>
 </small>
 
 ## 原生 HTML {#raw-html}
 
-双大括号会把里面的数据当作纯文本而不是 HTML 处理，如果要输出真正的 HTML，需要使用[`v-html` 指令](/api/built-in-directives.html#v-html):
+双大括号里面的数据会作为纯文本而非 HTML 处理，如果要输出真正的 HTML，需要使用[`v-html` 指令](/api/built-in-directives.html#v-html):
 
 ```vue-html
 <p>使用文本插值: {{ rawHtml }}</p>
@@ -38,23 +38,23 @@ mustache 标签中的内容会被替换成对应组件实例上的 `msg` 属性�
   <p>使用 v-html 指令: <span v-html="rawHtml"></span></p>
 </div>
 
-这里出现了些新东西，这个 `v-html` 属性叫做 **指令**， 指令是 Vue 提供的以 `v-` 开头的特殊属性，你可能可以猜到，它们对渲染出来的 DOM 施加特殊的响应式行为。这里我们做的事情是：将 span 元素的 innerHTML 属性的值与当前活跃实例的 `rawHtml` 属性保持一致。
+我们遇到一个新概念，这个 `v-html` 属性叫做 **指令**。 指令是 Vue 提供的以 `v-` 开头的特殊属性，你可能可以猜到，它们会对渲染出来的 DOM 施加特殊的响应式行为。这里我们做的事情是：将 span 元素的 `innerHTML` 属性的值与当前活跃实例（active instance）的 `rawHtml` 属性保持一致。
 
-`span` 元素的内容会被替换为 `rawHtml` 属性的值，插值为纯 HTML，数据绑定将会被忽略。注意你不能通过拼接 `v-html` 来组合出一个模板来，因为 Vue 不是基于字符串的模板引擎，应该使用组件作为 UI 重用和组合的基本单元。
+`span` 元素的内容会替换为 `rawHtml` 属性的值，插值为纯 HTML，其中的数据绑定会被忽略。注意你不能通过拼接 `v-html` 来组合出一个模板来，因为 Vue 不是基于字符串的模板引擎，应该将组件作为 UI 重用和组合的基本单位。
 
 :::warning 安全警告
-将任意 HTML 动态渲染到你的网站上是非常危险的，这非常容易造成 [XSS 漏洞](https://en.wikipedia.org/wiki/Cross-site_scripting)。只对受信的内容使用 `v-html`，**绝对不要**将它用在用户输入的内容上。
+将任意 HTML 动态渲染到你的网站上是非常危险的，这非常容易造成 [XSS 漏洞](https://en.wikipedia.org/wiki/Cross-site_scripting)。只对受信的内容使用 `v-html`，**绝对不要**拿它渲染用户输入的内容。
 :::
 
 ## 绑定属性 {#attribute-bindings}
 
-Mustaches 语法无法作用到 HTML 属性上，遇到这种情况使用 [`v-bind` 指令](/api/built-in-directives.html#v-bind):
+双大括号语法无法作用于 HTML 属性，遇到这种情况使用 [`v-bind` 指令](/api/built-in-directives.html#v-bind):
 
 ```vue-html
 <div v-bind:id="dynamicId"></div>
 ```
 
-`v-bind` 指令告诉 Vue 将 div 元素的 `id` 属性和组件的 `dynamicId` 属性的值保持一致。如果所绑订的值是 `null` 或 `undefined`, 则 `id` 属性会从最终渲染出来的元素中移除。
+`v-bind` 指令告诉 Vue 将 div 元素的 `id` 属性和组件的 `dynamicId` 属性的值保持一致。如果绑定的值是 `null` 或 `undefined`, 则最终渲染出来的元素会移除 `id` 属性。
 
 ### 缩写 {#shorthand}
 
@@ -78,17 +78,17 @@ Mustaches 语法无法作用到 HTML 属性上，遇到这种情况使用 [`v-bi
 <button :disabled="isButtonDisabled">Button</button>
 ```
 
-如果 `isButtonDisabled` 的值为 [真值](https://developer.mozilla.org/en-US/docs/Glossary/Truthy)或空字符串(即 `<button disabled="">`)时，`disabled` 属性会出现在元素上<sup>[[3]](#footnote-3)</sup>，如果它的值为假值，则 `disabled` 会被忽略。
+如果 `isButtonDisabled` 的值为 [真值](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) 或空字符串（即 `<button disabled="">`）时，`disabled` 属性会出现在元素上<sup>[[3]](#footnote-3)</sup>，如果它的值为假值，则 `disabled` 会被忽略。
 
 <small>
 译者注：
 <div id="footnote-2">[2] 出现该属性表示该属性的值为 true</div>
-<div id="footnote-3">[3] 同时 <button /> 上出现 disabled 表示该标签的 disabled 属性为 true</div>
+<div id="footnote-3">[3] 同时 &lt;button&gt; 上出现 disabled 表示该标签的 disabled 属性为 true</div>
 </small>
 
 ### 动态绑定多个属性 {#dynamically-binding-multiple-attributes}
 
-如果你想用一个 JavaScript 对象来表示多个属性，如：
+如果你想用一个 JavaScript 对象表示多个属性，如：
 
 <div class="composition-api">
 
@@ -135,16 +135,16 @@ data() {
 <div :id="`list-${id}`"></div>
 ```
 
-这些表达式会被当作 JavaScript，在当前组件实例的作用域中计算。
+这些表达式会被当作 JavaScript 代码，在当前组件实例的作用域中计算。
 
 在 Vue 模板中，JavaScript 表达式可用在以下地方：
 
-- 在文本插值的中(mustaches 标签内)
+- 在文本插值的中（双大括号标签内）
 - 在任何以 `v-` 开头的 Vue 指令绑定的属性值上
 
 ### 要用表达式而非语句 {#expressions-only}
 
-每个绑定只支持 **单一表达式**，下面的示例是 **无效** 的：
+每个绑定只支持 **单一表达式**，下面的示例代码是 **无效** 的：
 
 ```vue-html
 <!-- 这是一个语句，而非表达式 -->
@@ -156,7 +156,7 @@ data() {
 
 ### 调用函数 {#calling-functions}
 
-在写绑定的表达式的地方可以调用组件暴露的方法：
+在写绑定表达式的地方可以调用组件暴露的方法：
 
 ```vue-html
 <span :title="toTitleDate(date)">
@@ -176,19 +176,19 @@ data() {
 
 ## 指令 {#directives}
 
-指令是带有 `v-` 前缀的特殊 attribute。Vue 提供了许多 [内置指令](/api/built-in-directives.html)，包括上面我们介绍到的 `v-bind`。
+指令是带有 `v-` 前缀的特殊 attribute。Vue 提供许多 [内置指令](/api/built-in-directives.html)，包括上面我们介绍到的 `v-bind`。
 
-指令属性的值是纯 JavaScript 表达式 （之后要讨论到的 `v-for` 和 `v-on` 将会是例外）。指令的热任务是在其表达式的值改变后响应式更新 DOM。以 [`v-if`](/api/built-in-directives.html#v-if) 为例：
+指令属性的值是纯 JavaScript 表达式 （之后要讨论到的 `v-for` 和 `v-on` 是例外）。指令的作用是，在其表达式的值改变后响应式更新 DOM。以 [`v-if`](/api/built-in-directives.html#v-if) 为例：
 
 ```vue-html
 <p v-if="seen">Now you see me</p>
 ```
 
-这里， `v-if` 指令将基于表达式 `seen` 值的真假来移除 / 插入 `<p>` 元素。
+这里， `v-if` 指令将基于表达式 `seen` 值的真假来移除或插入 `<p>` 元素。
 
 ### 指令的参数 {#arguments}
 
-有的指令能接收一个“参数”，在指令名后通过一个冒号隔开做标识。例如 `v-bind` 指令被用来响应式的更新一个 HTML 属性：
+有的指令需要一个“参数”，在指令名后通过一个冒号隔开做标识。例如 `v-bind` 指令被用来响应式的更新一个 HTML 属性：
 
 ```vue-html
 <a v-bind:href="url"> ... </a>
@@ -199,7 +199,7 @@ data() {
 
 这里 `href` 就是一个参数，它告诉 `v-bind` 指令绑定表达式值 `url` 到元素的 `href` attribute 上。在缩写中，参数前的一切（例如 `v-bind:`）都会被缩略为一个 `:` 字符。
 
-另一个例子是 `v-on` 指令，它将监听 DOM 事件：
+另一个例子是 `v-on` 指令，它会监听 DOM 事件：
 
 ```vue-html
 <a v-on:click="doSomething"> ... </a>
@@ -240,12 +240,13 @@ data() {
 
 <small>
 译者注：
-<div id="footnote-4">[4] 这样实现的效果是 <a/> 标签被监听的事件会在运行时改变，但事件处理器都是同一个。</div>
+<div id="footnote-4">[4] 这样实现的效果是，<code>&lt;a&gt</code> 标签被监听的事件会随着 <code>eventName</code> 变量的值而改变，但事件处理器都是同一个 <code>doSomething</code>
+</div>
 </small>
 
-#### 对动态参数值的限制 {#dynamic-argument-syntax-constraints}
+#### 对动态参数值的限制 {#dynamic-argument-value-constraints}
 
-动态参数的值应该是一个字符串，或是 `null`，特殊值 `null` 用于显式地移除事件绑定，除此以外的任何非字符串值都将触发警告。
+动态参数的值应该是一个字符串，或是 `null`，特殊值 `null` 用于显式地移除事件绑定，除此以外的任何非字符串值都会触发警告。
 
 #### 对动态参数语法的限制 {#dynamic-argument-syntax-constraints}
 
@@ -256,35 +257,34 @@ data() {
 <a :['foo' + bar]="value"> ... </a>
 ```
 
-如果你想传入一个复杂的动态参数，我们推荐使用[计算属性](./computed.html)，我们很快就会讲到它。
+如果你想传入一个复杂的动态参数，我们推荐使用 [计算属性](./computed.html)，我们很快就会讲到它。
 
 当使用 DOM 内嵌模板（直接写在 HTML 文件里的模板）时，需要避免在名称中使用大写字母，因为浏览器会强制将其转换为小写：
 
 ```vue-html
 <a :[someAttr]="value"> ... </a>
 ```
-上面的例子将会在 DOM 内嵌模板中被转换为 `:[someattr]`。
-如果你的组件只有 “someAttr” 属性没有 “someattr”，这个绑定就会失效。
+上面的代码将在 DOM 内嵌模板中转换为 `:[someattr]`。如果你的组件只有 “someAttr” 属性没有 “someattr”，这个绑定就会失效。
 
 ### 修饰符 {#modifiers}
 
-修饰符是以点开头的特殊后缀，表明指令在绑定时需要执行一些特殊的操作。例如 `.prevent` 修饰符会告知 `v-on` 指令对触发的事件调用 `event.preventDefault()`：
+修饰符是以点开头的特殊后缀，表明指令需要以一些特殊的方式绑定。例如 `.prevent` 修饰符会告知 `v-on` 指令对触发的事件调用 `event.preventDefault()`：
 
 ```vue-html
 <form @submit.prevent="onSubmit">...</form>
 ```
 
-之后在介绍 [`v-on`](./event-handling.html#event-modifiers) 和 [`v-model`](./forms.html#modifiers) 的功能时，会有其他修饰符的例子。
+后面介绍 [`v-on`](./event-handling.html#event-modifiers) 和 [`v-model`](./forms.html#modifiers) 的功能时，会引入其他修饰符的例子。
 
 最后，在这里你可以直观地看到完整的指令语法：
 
 ![directive syntax graph](./images/directive.png)
 
-<!-- https://www.figma.com/file/BGWUknIrtY9HOmbmad0vFr/Directive -->
+<!-- 原图见 https://www.figma.com/file/BGWUknIrtY9HOmbmad0vFr/Directive -->
 
 ## 小结
 
-- 概念级别
+- 本文提到的概念
 
 ```
 模板语法
@@ -300,10 +300,15 @@ data() {
 │  └─ 有限的全局访问
 ├─ 指令
 │  ├─ 指令的参数
-│  └─ 动态参数
-│     ├─ 对动态参数值的限制
-│     ├─ 对动态参数语法的限制
+│  ├─ 动态参数
+│  │  ├─ 对动态参数值的限制
+│  │  ├─ 对动态参数语法的限制
 │  └─ 修饰符
 ```
 
+本节介绍 Vue 的模板系统，字面上理解，写模板就是写那些静态的、不变的页面内容——HTML 标签。关键在于 Vue 会把模板先编译成 JavaScript 代码，这解开了动态渲染的威力：
 
+  - 文本插值语法，在双括号中写入 JavaScript 表达式，Vue 会算出表达式的值（通常是字符串类型），插入双括号所在的位置，用于动态渲染文本。
+  - Vue 指令，让你可以动态操作 HTML 标签中的属性：动态选择要操作的属性（动态参数）、动态设定属性的值。
+
+你不必在写模板的时候就把内容确定下来，相反，你写变量作为占位符放入模板，变量的值可能来自调用接口返回的数据，可能由用户点击一个按钮产生，只要你用 Vue 响应式机制定义变量，那么每当变量的值发生改变，模板中出现这个变量的地方也会相应改变。
