@@ -374,7 +374,7 @@ console.log(proxy.nested === raw) // false
 
 ## 用 `ref()` 定义响应式变量 \*\* {#reactive-variables-with-ref}
 
-为了解决 `reactive()` 的局限，Vue 提供 [`ref()`](/api/reactivity-core.html#ref) 方法创建响应式的 **ref**（响应式对象 ref），用它来 hold 住任何类型的值：
+为了解决 `reactive()` 的局限，Vue 提供 [`ref()`](/api/reactivity-core.html#ref) 方法创建响应式的 **ref**<sup>[[1]](#footnote-1)</sup>，用它来 hold 住任何类型的值：
 
 ```js
 import { ref } from 'vue'
@@ -425,6 +425,11 @@ const { foo, bar } = obj
 ```
 
 一言蔽之，`ref()` 使我们能创造一种对任何值的 "引用" 并能随意传递不丢失响应性。这个功能非常重要，因为它经常用于将逻辑提取到 [组合函数](/guide/reusability/composables.html) 中。
+
+<small>
+译者注：
+<div id="footnote-1">[1] ref 指被 ref() 函数包裹后得到的响应式对象</div>
+</small>
 
 ### ref 在模板中的自动解封 \*\* {#ref-unwrapping-in-templates}
 
@@ -588,7 +593,7 @@ function increment() {
 
 ## 小结
 
-- 本文提到的概念
+- 本节提到的概念
 
 ```
 响应式基础
