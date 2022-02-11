@@ -46,7 +46,7 @@ const author = reactive({
 <span>{{ author.books.length > 0 ? 'Yes' : 'No' }}</span>
 ```
 
-这时的模板已经有了点凌乱的迹象，我们得定睛看一看才能明白这里有一个基于 `author.books` 属性的计算，更重要的是，如果在模板的其他地方也有这样的计算，我们可能不想再写一遍相同的表达式。
+这时的模板已经有了点凌乱的迹象，我们得定睛看才能明白这里有一个基于 `author.books` 属性的计算，更重要的是，如果模板的其他地方也要这个计算，我们可能不想把相同表达式再写一遍。
 
 因此我们推荐使用 **计算属性** 来描述包含响应式状态的复杂逻辑。这是重构后的示例：
 
@@ -81,7 +81,7 @@ export default {
 <span>{{ publishedBooksMessage }}</span>
 ```
 
-[Try it in the Playground](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdD5cbmV4cG9ydCBkZWZhdWx0IHtcbiAgZGF0YSgpIHtcbiAgICByZXR1cm4ge1xuICAgICAgYXV0aG9yOiB7XG4gICAgICAgIG5hbWU6ICdKb2huIERvZScsXG4gICAgICAgIGJvb2tzOiBbXG4gICAgICAgICAgJ1Z1ZSAyIC0gQWR2YW5jZWQgR3VpZGUnLFxuICAgICAgICAgICdWdWUgMyAtIEJhc2ljIEd1aWRlJyxcbiAgICAgICAgICAnVnVlIDQgLSBUaGUgTXlzdGVyeSdcbiAgICAgICAgXVxuICAgICAgfVxuICAgIH1cbiAgfSxcbiAgY29tcHV0ZWQ6IHtcbiAgICBwdWJsaXNoZWRCb29rc01lc3NhZ2UoKSB7XG4gICAgICByZXR1cm4gdGhpcy5hdXRob3IuYm9va3MubGVuZ3RoID4gMCA/ICdZZXMnIDogJ05vJ1xuICAgIH1cbiAgfVxufVxuPC9zY3JpcHQ+XG5cbjx0ZW1wbGF0ZT5cbiAgPHA+SGFzIHB1Ymxpc2hlZCBib29rczo8L3A+XG4gIDxzcGFuPnt7IGF1dGhvci5ib29rcy5sZW5ndGggPiAwID8gJ1llcycgOiAnTm8nIH19PC9zcGFuPlxuPC90ZW1wbGF0ZT4iLCJpbXBvcnQtbWFwLmpzb24iOiJ7XG4gIFwiaW1wb3J0c1wiOiB7XG4gICAgXCJ2dWVcIjogXCJodHRwczovL3NmYy52dWVqcy5vcmcvdnVlLnJ1bnRpbWUuZXNtLWJyb3dzZXIuanNcIlxuICB9XG59In0=)
+[在 Playground 中试试手](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdD5cbmV4cG9ydCBkZWZhdWx0IHtcbiAgZGF0YSgpIHtcbiAgICByZXR1cm4ge1xuICAgICAgYXV0aG9yOiB7XG4gICAgICAgIG5hbWU6ICdKb2huIERvZScsXG4gICAgICAgIGJvb2tzOiBbXG4gICAgICAgICAgJ1Z1ZSAyIC0gQWR2YW5jZWQgR3VpZGUnLFxuICAgICAgICAgICdWdWUgMyAtIEJhc2ljIEd1aWRlJyxcbiAgICAgICAgICAnVnVlIDQgLSBUaGUgTXlzdGVyeSdcbiAgICAgICAgXVxuICAgICAgfVxuICAgIH1cbiAgfSxcbiAgY29tcHV0ZWQ6IHtcbiAgICBwdWJsaXNoZWRCb29rc01lc3NhZ2UoKSB7XG4gICAgICByZXR1cm4gdGhpcy5hdXRob3IuYm9va3MubGVuZ3RoID4gMCA/ICdZZXMnIDogJ05vJ1xuICAgIH1cbiAgfVxufVxuPC9zY3JpcHQ+XG5cbjx0ZW1wbGF0ZT5cbiAgPHA+SGFzIHB1Ymxpc2hlZCBib29rczo8L3A+XG4gIDxzcGFuPnt7IGF1dGhvci5ib29rcy5sZW5ndGggPiAwID8gJ1llcycgOiAnTm8nIH19PC9zcGFuPlxuPC90ZW1wbGF0ZT4iLCJpbXBvcnQtbWFwLmpzb24iOiJ7XG4gIFwiaW1wb3J0c1wiOiB7XG4gICAgXCJ2dWVcIjogXCJodHRwczovL3NmYy52dWVqcy5vcmcvdnVlLnJ1bnRpbWUuZXNtLWJyb3dzZXIuanNcIlxuICB9XG59In0=)
 
 我们定义了一个计算属性 `publishedBooksMessage`。
 
@@ -89,7 +89,7 @@ export default {
 
 在模板中使用计算属性的方式和一般的实例属性一样。Vue 会检测到 `this.publishedBooksMessage` 依赖于 `this.author.books`，所以当 `this.author.books` 改变时，任何依赖于 `this.publishedBooksMessage` 的绑定都将同时更新。
 
-也可参考：[为计算属性标记类型 ](/guide/typescript/options-api.html#typing-computed) <sup class="vt-badge ts">TS</sup>
+计算属性的类型请参考：[为计算属性标记类型 ](/guide/typescript/options-api.html#typing-computed) <sup class="vt-badge ts" />
 
 </div>
 
@@ -124,7 +124,7 @@ const publishedBooksMessage = computed(() => {
 
 我们定义了一个计算属性 `publishedBooksMessage`。`computed()` 方法接收一个 getter 函数，返回值为一个**计算属性 ref**。就像其他的 ref，你可以通过 `publishedBooksMessage.value` 访问计算结果。计算属性 ref 也会在模板中自动解封，因此在模板表达式中引用时无需添加 `.value`。
 
-计算属性会自动追踪响应式依赖，Vue会检测到 `publishedBooksMessage` 依赖于 `author.books`，所以当 `author.books` 改变时，任何依赖于 `publishedBooksMessage` 的绑定都会同时更新。
+计算属性会自动追踪响应式依赖，Vue 会检测到 `publishedBooksMessage` 依赖于 `author.books`，所以当 `author.books` 改变时，任何依赖于 `publishedBooksMessage` 的绑定都会同时更新。
 
 计算属性的类型请参考：[为计算属性标注类型](/guide/typescript/composition-api.html#typing-computed) <sup class="vt-badge ts" />
 
@@ -161,7 +161,8 @@ function calculateBooksMessage() {
 ```
 
 </div>
-我们确实可以将同一个函数定义为方法而不是计算属性，两种方式在结果上也完全相同。但是，不同之处在于 **计算属性值会基于其响应式依赖被缓存**。一个计算属性仅会在其响应式依赖更新时才重新计算，这意味着只要 `author.books` 不改变，不管多少次访问 `publishedBooksMessage` 都会立即返回先前的计算结果，而不用重复执行 getter 函数。
+
+我们确实可以将同一个函数定义为方法而不是计算属性，两种方式在结果上也完全相同。但是，不同之处在于 **计算属性值会基于其响应式依赖被缓存**。一个计算属性仅会在其响应式依赖更新时才重新计算，这意味着只要 `author.books` 不改变，无论多少次访问 `publishedBooksMessage` 都会立即返回先前的计算结果，而不用重复执行 getter 函数。
 
 这也意味着下面的计算属性永远不会更新，因为 `Date.now()` 并不是一个响应式依赖<sup>[[1]](#footnote-1)</sup>：
 
@@ -185,13 +186,13 @@ const now = computed(() => Date.now())
 
 </div>
 
-相比之下，方法调用 **总是** 会在重渲染发生时再次执行函数。
+相比之下，方法调用**总是**会在重新渲染时再次执行函数。
 
 为什么需要缓存呢？想象我们有一个非常耗性能的计算属性 `list`，需要循环一个巨量数组再做许多计算，并且可能也有其他计算属性依赖于 `list`。没有缓存的话，我们会重复执行非常多次 `list` 的计算函数，然而这实际上没有必要！如果你确定不需要缓存，那就使用方法调用。
 
 <small>
-<div id="footnote-1">[1] Data.now() 返回 UNIX 纪元开始到当前时间过了多少毫秒，计算一次后就不再改变</div>
-</small>、
+<div id="footnote-1">[1] Data.now() 返回 UNIX 纪元开始到当前时间经过了多少毫秒，计算一次后就不再改变</div>
+</small>
 
 ## 可写计算属性 {#writable-computed}
 
@@ -258,11 +259,11 @@ const fullName = computed({
 
 ### 计算函数不应有副作用 {#getters-should-be-side-effect-free}
 
-计算属性的 getter 函数应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举个例子，不要在计算函数中做异步请求或者更改 DOM！一个计算属性的宣告如何根据其他值派生一个值，因此计算函数的职责应该仅为计算和返回该值。在之后的指南中我们会讨论如何使用 [watchers](./watchers) 根据其他响应式状态的变更来执行副作用。
+计算属性的 getter 函数应只做计算而没有任何其他的副作用，这一点非常重要，请务必牢记。举个例子，不要在计算函数中做异步请求或者更改 DOM！一个计算属性相当于宣告如何根据其他值派生出一个值，因此计算函数的职责应该仅为计算和返回该值。在之后的指南中我们会讨论如何使用 [watchers](./watchers) 根据其他响应式状态的变更来执行副作用。
 
 ### 避免直接修改计算属性值 {#avoid-mutating-computed-value}
 
-从计算属性返回的值是一个派生状态，可以把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照。因此更改快照是没有意义的，应该将计算属性的返回值视为只读，不要直接修改它。要改的话，应该修改它所依赖的源状态，以触发一次新的计算。
+从计算属性返回的值是派生出来的状态，把它看作是一个“临时快照”，每当源状态发生变化时，就会创建一个新的快照，更改快照是没有意义的。应该将计算属性的返回值视为只读的，不要直接修改它。要改的话，应该修改它所依赖的源状态，以触发一次新的计算。
 
 ## 小结
 
