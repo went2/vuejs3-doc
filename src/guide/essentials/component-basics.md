@@ -1,5 +1,7 @@
 # Components Basics
 
+# 组件基础
+
 Components allow us to split the UI into independent and reusable pieces, and think about each piece in isolation. It's common for an app to be organized into a tree of nested components:
 
 ![Component Tree](./images/components.png)
@@ -8,7 +10,10 @@ Components allow us to split the UI into independent and reusable pieces, and th
 
 This is very similar to how we nest native HTML elements, but Vue implements its own component model that allow us to encapsulate custom content and logic in each component. Vue also plays nicely with native Web Components. If you are curious about the relationship between Vue Components and native Web Components, [read more here](/guide/extras/web-components.html).
 
+这很像我们嵌套原生 HTML 元素的操作，但 Vue 实现的组件模式能让开发者在每个组件内封装自定义的逻辑与内容，同时 Vue 还保持对原生 Web 组件的兼容，有兴趣了解更多 Vue 组件和 Web 组件的关系，[参见这里](/guide/extras/web-components.html)
+
 ## Defining a Component
+## 定义组件
 
 When using a build step, we typically define each Vue component in a dedicated file using the `.vue` extension - known as a [Single-File Component](/guide/scaling-up/sfc.html) (SFC for short):
 
@@ -47,6 +52,7 @@ const count = ref(0)
 
 </div>
 
+如果没有构建这一步，可以把 Vue 组件定义为一个普通 JavaScript 对象，该对象需包含特定的 Vue 选项作为属性：
 When not using a build step, a Vue component can be defined as a plain JavaScript object containing Vue-specific options:
 
 <div class="options-api">
@@ -89,13 +95,16 @@ export default {
 The template is inlined as a JavaScript string here, which Vue will compile on the fly. You can also use an ID selector pointing to an element (usually native `<template>` elements) - Vue will use its content as the template source.
 
 The example above defines a single component and exports it as the default export of a `.js` file, but you can use named exports to export multiple components from the same file.
+可以默认导出，也可以通过命名，在同一个文件中导出多个组件
 
 ## Using a Component
+## 使用组件
 
 :::tip
 We will be using SFC syntax for the rest of this guide - the concepts around components are the same regardless of whether you are using a build step for not. The [Examples](/examples/) section shows component usage in both scenarios.
 :::
 
+先在父组件中导入子组件。
 To use a child component, we need to import it in the parent component. Assuming we placed our counter component inside a file called `ButtonCounter.vue`, the component will be exposed as the file's default export:
 
 <div class="options-api">
@@ -117,6 +126,8 @@ export default {
 </template>
 ```
 
+为了将导入的组件暴露给模板使用，需要在 `components` 选项中进行[注册](/guide/components/registration.html)，然后可以在模板中跟使用标签一样使用注册后的组件名。
+
 To expose the imported component to our template, we need to [register](/guide/components/registration.html) it with the `components` option. The component will then be available as a tag using the key it is registered under.
 
 </div>
@@ -134,10 +145,12 @@ import ButtonCounter from './ButtonCounter.vue'
 </template>
 ```
 
+用 `<script setup>` 后，导入的组件无需注册就可直接在模板中使用。
 With `<script setup>`, imported components are automatically made available to the template.
 
 </div>
 
+也可以全局注册一个组件，这样它能被在 App 的级别下所有组件使用而不用导入。
 It's also possible to globally register a component, making it available to all components in a given app without having to import it. The pros and cons of global vs. local registration is discussed in the dedicated [Component Registration](/guide/components/registration.html) section.
 
 Components can be reused as many times as you want:
@@ -161,6 +174,7 @@ Components can be reused as many times as you want:
 </div>
 
 Notice that when clicking on the buttons, each one maintains its own, separate `count`. That's because each time you use a component, a new **instance** of it is created.
+每次在模板中使用一个组件，会新建一个该组件的**实例**。
 
 In SFCs, it's recommended to use `PascalCase` tag names for child components to differentiate from native HTML elements. Although native HTML tag names are case-insensitive, Vue SFC is a compiled format so we are able to use case-sensitive tag names in it. We are also able to use `/>` to close a tag.
 
@@ -176,9 +190,11 @@ If you are authoring your templates directly in a DOM (e.g. as the content of a 
 See [DOM template parsing caveats](#dom-template-parsing-caveats) for more details.
 
 ## Passing Props
+## 传递 props
 
 If we are building a blog, we will likely need a component representing a blog post. We want all the blog posts to share the same visual layout, but with different content. Such a component won't be useful unless you can pass data to it, such as the title and content of the specific post we want to display. That's where props come in.
 
+props 是注册到组件上的自定义属性。要先声明这个组件能接受哪些 props（声明为一个列表）
 Props are custom attributes you can register on a component. To pass a title to our blog post component, we must declare it in the list of props this component accepts, using the <span class="options-api">[`props`](/api/options-state.html#props) option</span><span class="composition-api">[`defineProps`](/api/sfc-script-setup.html#defineprops-defineemits) macro</span>:
 
 <div class="options-api">
@@ -196,6 +212,7 @@ export default {
 </template>
 ```
 
+当给组件的 prop attribute 传值时，它就会成为这个组件实例的属性，和其他组件属性一样。它这个属性的值在组件模板、组件的 `this` 上下文中都能获取到。
 When a value is passed to a prop attribute, it becomes a property on that component instance. The value of that property is accessible within the template and on the component's `this` context, just like any other component property.
 
 </div>
@@ -213,6 +230,8 @@ defineProps(['title'])
 ```
 
 `defineProps` is a compile-time macro that is only available inside `<script setup>` and does not need to be explicitly imported. Declared props are automatically exposed to the template. `defineProps` also returns an object that contains all the props passed to the component, so that we can access them in JavaScript if needed:
+
+`defineProps` 会返回一个包含所有接收到的 props 的对象，有需要时可用 JavaScript 访问：
 
 ```js
 const props = defineProps(['title'])
@@ -236,6 +255,7 @@ export default {
 
 A component can have as many props as you like and, by default, any value can be passed to any prop.
 
+一个 prop 在子组件中注册后，就能像自定义 HTML attribute 一样对待它，给它传值：
 Once a prop is registered, you can pass data to it as a custom attribute, like this:
 
 ```vue-html
@@ -302,10 +322,13 @@ Notice how we can use `v-bind` to pass dynamic props. This is especially useful 
 That's all you need to know about props for now, but once you've finished reading this page and feel comfortable with its content, we recommend coming back later to read the full guide on [Props](/guide/components/props.html).
 
 ## Listening to Events
+## 事件监听
 
 As we develop our `<BlogPost>` component, some features may require communicating back up to the parent. For example, we may decide to include an accessibility feature to enlarge the text of blog posts, while leaving the rest of the page its default size.
 
 In the parent, we can support this feature by adding a `postFontSize` <span class="options-api">data property</span><span class="composition-api">ref</span>:
+
+（composition-api 与 options-api 中的 data property 对应的概念一律为 ref）
 
 <div class="options-api">
 
@@ -359,6 +382,8 @@ Now let's add a button to the `<BlogPost>` component's template:
 
 The button currently doesn't do anything yet - we want clicking the button to communicate to the parent that it should enlarge the text of all posts. To solve this problem, component instances provide a custom events system. The parent can choose to listen to any event on the child component instance with `v-on` or `@`, just as we would with a native DOM event:
 
+组件实例有一个自定义事件系统，父组件可监听子组件实例的任何事件。
+
 ```vue-html{3}
 <BlogPost
   ...
@@ -366,6 +391,7 @@ The button currently doesn't do anything yet - we want clicking the button to co
  />
 ```
 
+子组件要在它自己身上 emit 一个事件，通过调用内建的 `$emit` 方法，把事件名传进去。
 Then the child component can emit an event on itself by calling the built-in [**`$emit`** method](/api/component-instance.html#emit), passing the name of the event:
 
 ```vue{5}
@@ -391,6 +417,7 @@ Thanks to the `@enlarge-text="postFontSize += 0.1"` listener, the parent will re
 
 </div>
 
+或者用 `emits` option or `defineEmits` api 声明需要 emit 的事件
 We can optionally declare emitted events using the <span class="options-api">[`emits`](/api/options-state.html#emits) option</span><span class="composition-api">[`defineEmits`](/api/sfc-script-setup.html#defineprops-defineemits) macro</span>:
 
 <div class="options-api">
@@ -447,7 +474,10 @@ export default {
 
 That's all you need to know about custom component events for now, but once you've finished reading this page and feel comfortable with its content, we recommend coming back later to read the full guide on [Custom Events](/guide/components/events).
 
+读一下 [自定义事件](/guide/components/events)。
+
 ## Content Distribution with Slots
+## 用 Slots 做 Content Distribution
 
 Just like with HTML elements, it's often useful to be able to pass content to a component, like this:
 
@@ -480,6 +510,7 @@ This can be achieved using Vue's custom `<slot>` element:
 </style>
 ```
 
+Vue 提供的 `<slot>` 元素是一个占位符，它最终会被传入组件的内容取代。
 As you'll see above, we use the `<slot>` as a placeholder where we want the content to go – and that's it. We're done!
 
 <div class="options-api">
@@ -495,7 +526,10 @@ As you'll see above, we use the `<slot>` as a placeholder where we want the cont
 
 That's all you need to know about slots for now, but once you've finished reading this page and feel comfortable with its content, we recommend coming back later to read the full guide on [Slots](/guide/components/slots).
 
+读一下[Slots](/guide/components/slots)。
+
 ## Dynamic Components
+## 动态组件
 
 Sometimes, it's useful to dynamically switch between components, like in a tabbed interface:
 
