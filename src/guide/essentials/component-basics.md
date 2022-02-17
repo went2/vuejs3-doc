@@ -194,7 +194,7 @@ See [DOM template parsing caveats](#dom-template-parsing-caveats) for more detai
 
 If we are building a blog, we will likely need a component representing a blog post. We want all the blog posts to share the same visual layout, but with different content. Such a component won't be useful unless you can pass data to it, such as the title and content of the specific post we want to display. That's where props come in.
 
-props 是注册到组件上的自定义属性。要先声明这个组件能接受哪些 props（声明为一个列表）
+props 是注册到组件上的自定义 attribute。要先声明这个组件能接受哪些 props（声明为一个列表）
 Props are custom attributes you can register on a component. To pass a title to our blog post component, we must declare it in the list of props this component accepts, using the <span class="options-api">[`props`](/api/options-state.html#props) option</span><span class="composition-api">[`defineProps`](/api/sfc-script-setup.html#defineprops-defineemits) macro</span>:
 
 <div class="options-api">
@@ -238,7 +238,7 @@ const props = defineProps(['title'])
 console.log(props.title)
 ```
 
-See also: [Typing Component Props](/guide/typescript/composition-api.html#typing-component-props) <sup class="vt-badge ts" />
+See also: [为 props 定类型](/guide/typescript/composition-api.html#typing-component-props) <sup class="vt-badge ts" />
 
 If you are not using `<script setup>`, props should be declared using the `props` option, and the props object will be passed to `setup()` as the first argument:
 
@@ -417,7 +417,7 @@ Thanks to the `@enlarge-text="postFontSize += 0.1"` listener, the parent will re
 
 </div>
 
-或者用 `emits` option or `defineEmits` api 声明需要 emit 的事件
+不用内联的方式，可以用 `emits` option or `defineEmits` api 声明需要 emit 的事件
 We can optionally declare emitted events using the <span class="options-api">[`emits`](/api/options-state.html#emits) option</span><span class="composition-api">[`defineEmits`](/api/sfc-script-setup.html#defineprops-defineemits) macro</span>:
 
 <div class="options-api">
@@ -510,7 +510,7 @@ This can be achieved using Vue's custom `<slot>` element:
 </style>
 ```
 
-Vue 提供的 `<slot>` 元素是一个占位符，它最终会被传入组件的内容取代。
+Vue 提供的 `<slot>` 元素是一个占位符，它最终会被组件的内容（标签之内的东西）取代。
 As you'll see above, we use the `<slot>` as a placeholder where we want the content to go – and that's it. We're done!
 
 <div class="options-api">
@@ -526,12 +526,13 @@ As you'll see above, we use the `<slot>` as a placeholder where we want the cont
 
 That's all you need to know about slots for now, but once you've finished reading this page and feel comfortable with its content, we recommend coming back later to read the full guide on [Slots](/guide/components/slots).
 
-读一下[Slots](/guide/components/slots)。
+读一下 [Slots](/guide/components/slots)。
 
 ## Dynamic Components
 ## 动态组件
 
 Sometimes, it's useful to dynamically switch between components, like in a tabbed interface:
+动态在组件之间切换很有用，如 tab 页
 
 <div class="options-api">
 
@@ -545,11 +546,12 @@ Sometimes, it's useful to dynamically switch between components, like in a tabbe
 </div>
 
 The above is made possible by Vue's `<component>` element with the special `is` attribute:
+上面的效果是用 Vue 的`<component>` 元素与一个特殊的 attribute `is` 实现的
 
 <div class="options-api">
 
 ```vue-html
-<!-- Component changes when currentTab changes -->
+<!-- currentTab 改变时组件跟着改变 -->
 <component :is="currentTab"></component>
 ```
 
@@ -557,7 +559,7 @@ The above is made possible by Vue's `<component>` element with the special `is` 
 <div class="composition-api">
 
 ```vue-html
-<!-- Component changes when currentTab changes -->
+<!-- currentTab 改变时组件跟着改变 -->
 <component :is="tabs[currentTab]"></component>
 ```
 
@@ -568,13 +570,21 @@ In the example above, the value passed to `:is` can contain either:
 - the name string of a registered component, OR
 - the actual imported component object
 
+`:is` 的值可以是：
+ - 一个已注册组件的名称字符串
+ - 实际导入的组件对象
+
 You can also use the `is` attribute to create regular HTML elements.
 
 When switching between multiple components with `<component :is="...">`, a component will be unmounted when it is switched away from. We can force the inactive components to stay "alive" with the built-in [`<KeepAlive>` component](/guide/built-ins/keep-alive.html).
 
+用 `<component :is="...">` 在多个组件之间切换时，被切走的组件会执行 unmounted 操作，我们用内建的 [`<KeepAlive>` 组件](/guide/built-ins/keep-alive.html)，强制让处于非激活状态的组件 stay alive。
+
 ## DOM Template Parsing Caveats
+## DOM 模板解析限制
 
 If you are writing your Vue templates directly in the DOM, Vue will have to retrieve the template string from the DOM. This leads to some caveats due to browsers' native HTML parsing behavior.
+在 DOM 中直接写 Vue 模板的一些约束。
 
 :::tip
 It should be noted that the limitations discussed below only apply if you are writing your templates directly in the DOM. They do NOT apply if you are using string templates from the following sources:
@@ -585,7 +595,9 @@ It should be noted that the limitations discussed below only apply if you are wr
   :::
 
 ### Case Insensitivity
+### 不区分大小写
 
+HTML 标签和 attribute 不区分大小写，浏览器把任何大写字母转成小写。
 HTML tags and attribute names are case-insensitive, so browsers will interpret any uppercase characters as lowercase. That means when you’re using in-DOM templates, PascalCase component names and camelCased prop names or `v-on` event names all need to use their kebab-cased (hyphen-delimited) equivalents:
 
 ```js
@@ -605,7 +617,9 @@ const BlogPost = {
 ```
 
 ### Self Closing Tags
+### 自闭合标签
 
+Vue 模板中可用自闭合标签，DOM 模板则必须写成对的标签。
 We have been using self-closing tags for components in previous code samples:
 
 ```vue-html
@@ -636,6 +650,7 @@ will be parsed as:
 ```
 
 ### Element Placement Restrictions
+### 元素位置限制
 
 Some HTML elements, such as `<ul>`, `<ol>`, `<table>` and `<select>` have restrictions on what elements can appear inside them, and some elements such as `<li>`, `<tr>`, and `<option>` can only appear inside certain other elements.
 
