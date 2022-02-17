@@ -7,15 +7,8 @@
 ## 为什么？
 
 - learn vue3 the hard way
-- 写自己愿意重复看的 vue3 文档
 
-vue3 于2022年2月7日[成为官方正式版本](https://blog.vuejs.org/posts/vue-3-as-the-new-default.html)，目前英文文档基本完成，中文文档处于翻译进程，是学习新版本vue的好时机。
-
-## 怎么做？
-
-    - 目标：使译文符合现代白话文的阅读语感而非英文的字句对应
-    - 计划：逐步替换原仓库中的英文文档，2022年2月聚焦 guide-essentials 部分
-    - 策略：遵循社区术语翻译约定；采用已发布的中文文档（[vue3 官方中文文档](https://github.com/vuejs-translations/docs-zh-cn)）的流畅译文
+vue3 于2022年2月7日[成为官方正式版本](https://blog.vuejs.org/posts/vue-3-as-the-new-default.html)，目前英文文档基本完成，中文文档处于翻译进程，是了解新版本 vue 的好时机。
 
 God bless me.
     
