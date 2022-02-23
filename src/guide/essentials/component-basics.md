@@ -1,21 +1,16 @@
-# Components Basics
+# 组件基础 {#componets-basics}
 
-# 组件基础
-
-Components allow us to split the UI into independent and reusable pieces, and think about each piece in isolation. It's common for an app to be organized into a tree of nested components:
+组件是种抽象，组件让我们把 UI 界面划分成独立、可重用的部分，处理各自的逻辑，一个 app 通常会组织成嵌套的组件树的形式：
 
 ![Component Tree](./images/components.png)
 
 <!-- https://www.figma.com/file/qa7WHDQRWuEZNRs7iZRZSI/components -->
 
-This is very similar to how we nest native HTML elements, but Vue implements its own component model that allow us to encapsulate custom content and logic in each component. Vue also plays nicely with native Web Components. If you are curious about the relationship between Vue Components and native Web Components, [read more here](/guide/extras/web-components.html).
+嵌套组件就像嵌套原生 HTML 标签，Vue 实现的组件模式能让开发者在每个组件内封装自定义的逻辑与内容，同时 Vue 还保持对Web 原生组件的兼容，有兴趣了解更多 Vue 组件和 Web 组件的关系，[参见这里](/guide/extras/web-components.html)
 
-这很像我们嵌套原生 HTML 元素的操作，但 Vue 实现的组件模式能让开发者在每个组件内封装自定义的逻辑与内容，同时 Vue 还保持对原生 Web 组件的兼容，有兴趣了解更多 Vue 组件和 Web 组件的关系，[参见这里](/guide/extras/web-components.html)
+## 定义组件 {#defining-a-component}
 
-## Defining a Component
-## 定义组件
-
-When using a build step, we typically define each Vue component in a dedicated file using the `.vue` extension - known as a [Single-File Component](/guide/scaling-up/sfc.html) (SFC for short):
+如果项目有构建这一步，就通常把一个组件写成一个 `.vue` 文件，这叫 [单文件组件](/guide/scaling-up/sfc.html) (缩写 SFC):
 
 <div class="options-api">
 
@@ -31,7 +26,7 @@ export default {
 </script>
 
 <template>
-  <button @click="count++">You clicked me {{ count }} times.</button>
+  <button @click="count++">你点了 {{ count }} 次.</button>
 </template>
 ```
 
@@ -46,14 +41,13 @@ const count = ref(0)
 </script>
 
 <template>
-  <button @click="count++">You clicked me {{ count }} times.</button>
+  <button @click="count++">你点了 {{ count }} 次.</button>
 </template>
 ```
 
 </div>
 
 如果没有构建这一步，可以把 Vue 组件定义为一个普通 JavaScript 对象，该对象需包含特定的 Vue 选项作为属性：
-When not using a build step, a Vue component can be defined as a plain JavaScript object containing Vue-specific options:
 
 <div class="options-api">
 
@@ -66,7 +60,7 @@ export default {
   },
   template: `
     <button @click="count++">
-      You clicked me {{ count }} times.
+      你点了 {{ count }} 次.
     </button>`
 }
 ```
@@ -84,7 +78,7 @@ export default {
   },
   template: `
     <button @click="count++">
-      You clicked me {{ count }} times.
+      你点了 {{ count }} 次.
     </button>`
   // or `template: '#my-template-element'`
 }
@@ -92,13 +86,11 @@ export default {
 
 </div>
 
-The template is inlined as a JavaScript string here, which Vue will compile on the fly. You can also use an ID selector pointing to an element (usually native `<template>` elements) - Vue will use its content as the template source.
+上面 template 的值是JavaScript 内联字符串，Vue 会立时把它编译出来。template 也可以是一个元素（通常是原生`<template>` 元素）的 ID 选择器，Vue 会用元素的内容作为 template 内容来源。
 
-The example above defines a single component and exports it as the default export of a `.js` file, but you can use named exports to export multiple components from the same file.
-可以默认导出，也可以通过命名，在同一个文件中导出多个组件
+上面的例子定义了一个组件，并导出为 `.js` 文件，可以默认导出，也可以通过命名，在同一个文件中导出多个组件。
 
-## Using a Component
-## 使用组件
+## 使用组件 {#using-a-component}
 
 :::tip
 We will be using SFC syntax for the rest of this guide - the concepts around components are the same regardless of whether you are using a build step for not. The [Examples](/examples/) section shows component usage in both scenarios.
