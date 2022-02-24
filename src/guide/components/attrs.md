@@ -2,76 +2,80 @@
 outline: deep
 ---
 
-# Fallthrough Attributes
+# 穿透属性? Fallthrough Attributes {#fallthrough-attributes}
 
 > This page assumes you've already read the [Components Basics](/guide/essentials/component-basics). Read that first if you are new to components.
 
-## Attribute Inheritance
+## 属性继承
 
-A "fallthrough attribute" is an attribute or `v-on` event listener that is passed to a component, but is not explicitly declared in the receiving component's [props](./props) or [emits](./events.html#declaring-emitted-events). Common examples of this include `class`, `style`, and `id` attributes.
+一个从父组件“跌落下来”的属性，是父组件传给子组件的属性或 `v-on` 事件监听，但子组件内没有声明相应 [props](./props) 或 [emits](./events.html#declaring-emitted-events)，常见的“跌落”属性有 `class`、 `style`、和 `id` 属性。
 
-When a component renders a single root element, fallthrough attributes will be automatically added to the root element's attributes. For example, given a `<MyButton>` component with the following template:
+组件渲染**单一根元素**时，fallthrough（跌落）而来的属性会**自动追加到根元素属性**上<sup>[[1]](#footnote-1)</sup>。如，`<MyButton>` 组件有以下template：
 
 ```vue-html
 <!-- template of <MyButton> -->
-<button>click me</button>
+<button>点我</button>
 ```
 
-And a parent using this component with:
+它在父组件中这样使用：
 
 ```vue-html
 <MyButton class="large" />
 ```
 
-The final rendered DOM would be:
+渲染 `<MyButton>` 组件后得到 DOM 如下：
 
 ```html
-<button class="large">click me</button>
+<button class="large">点我</button>
 ```
 
-### `class` and `style` Merging
+<small>
+<div id="footnote-1">[1] 跌落下来的属性只是自动追加到根元素上，看来不能在实例对象中进行操纵。</div>
+</small>
 
-If the child component's root element already has existing `class` or `style` attributes, it will be merged with the `class` and `style` values that are inherited from the parent. Suppose we change the template of `<MyButton>` in the previous example to:
+### `class` 与 `style` 属性的合并 {#class-and-style-merging}
+
+如果子组件的根元素上已有 `class` 或 `style` 属性，父组件再传入相同属性时，两者就会合并。将上述 `<MyButton>` 模板修改为：
 
 ```vue-html
 <!-- template of <MyButton> -->
-<button class="btn">click me</button>
+<button class="btn">点我</button>
 ```
 
-Then the final rendered DOM would now become:
+最后渲染出来的 DOM 是：
 
 ```html
 <button class="btn large">click me</button>
 ```
 
-### `v-on` Listener Inheritance
+### `v-on` 监听器的继承
 
-The same rule applies to `v-on` event listeners:
+`v-on` 事件监听器也会进行属性合并：
 
 ```vue-html
 <MyButton @click="onClick" />
 ```
 
-The `click` listener will be added to the root element of `<MyButton>`, i.e. the native `<button>` element. When the native `<button>` is clicked, it will trigger the `onClick` method of the parent component. If the native `<button>` already has a `click` listener bound with `v-on`, then both listeners will trigger.
+`click` 事件监听器会追加到 `<MyButton>` 组件的根元素上，如果根元素是原生 `<button>` 元素，就追加到它上面，当原生 `<button>` 元素被点击时，就会触发父组件的 `onClick` 方法，如果原生 `<button>` 元素已有`click`事件监听器，两者监听器方法都会触发。
 
-### Nested Component Inheritance
+### 嵌套组件的继承 {#nested-component-inheritance}
 
-If a component renders another component as its root node, for example, we refactored `<MyButton>` to render a `<BaseButton>` as its root:
+如果子组件的根元素不是原生 HTML 元素而是另一个组件怎么办呢，比如，重写 `<MyButton>`，它的根元素也是一个需要被渲染的 `<BaseButton>` 组件。 
 
 ```vue-html
-<!-- template of <MyButton/> that simply renders another component -->
+<!-- <MyButton/> 的模板只做渲染另一个组件的操作 -->
 <BaseButton />
 ```
 
-Then the fallthrough attributes received by `<MyButton>` will be automatically forwarded to `<BaseButton>`.
+`<MyButton>` 接受到的跌落下来的属性会自动推送给 `<BaseButton>`。
 
-Note that:
+注意：
 
-1. Forwarded attributes do not include any attributes that are declared as props, or `v-on` listeners of declared events by `<MyButton>` - in other words, the declared props and listeners have been "consumed" by `<MyButton>`.
+1. `<MyButton>` 推送过去的属性不包括在它里面声明的 props 或者 `v-on` 监听器，声明的 props 和事件监听器都是 `<MyButton>` 内部使用的东西。
 
-2. Forwarded attributes may be accepted as props by `<BaseButton>`, if declared by it.
+2. `<BaseButton>` 可以将接受到的属性声明为 props。Forwarded attributes may be accepted as props by `<BaseButton>`, if declared by it.
 
-## Disabling Attribute Inheritance
+## 取消属性继承 {#disabling-attribute-inheritance}
 
 If you do **not** want a component to automatically inherit attributes, you can set `inheritAttrs: false` in the component's options.
 
