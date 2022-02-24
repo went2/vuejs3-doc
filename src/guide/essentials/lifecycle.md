@@ -1,9 +1,9 @@
 # Lifecycle Hooks
-# 声明周期钩子 {#lifecycle-hooks}
+# 生命周期钩子 {#lifecycle-hooks}
 
 Each Vue component instance goes through a series of initialization steps when it's created - for example, it needs to set up data observation, compile the template, mount the instance to the DOM, and update the DOM when data changes. Along the way, it also runs functions called lifecycle hooks, giving users the opportunity to add their own code at specific stages.
 
-## Registering Lifecycle Hooks
+## 注册生命周期钩子{#regstering-lifecycle-hooks}
 
 For example, the <span class="composition-api">`onMounted`</span><span class="options-api">`mounted`</span> hook can be used to run code after the component has finished the initial rendering and created the DOM nodes:
 

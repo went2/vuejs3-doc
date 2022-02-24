@@ -1,23 +1,23 @@
-# Component Events
+# 组件的事件 {#component-events}
 
 > This page assumes you've already read the [Components Basics](/guide/essentials/component-basics). Read that first if you are new to components.
 
-## Emitting and Listening to Events
+## 派发事件，监听事件 {#emitting-and-listening-events}
 
-A component can emit custom events directly in template expressions (e.g. in a `v-on` handler) using the built-in `$emit` function:
+在模板的表达式中，可以使用内建的 `$emit` 函数让组件直接派发自定义事件：
 
 ```vue-html
-<!-- MyComponent -->
-<button @click="$emit('someEvent')">click me</button>
+<!-- MyComponent 组件 -->
+<button @click="$emit('someEvent')">点我</button>
 ```
 
 <div class="options-api">
 
-The `$emit()` function is also available on the component instance as `this.$emit()`.
+`$emit()` 函数在组件实例中等价于 `this.$emit()`。
 
 </div>
 
-The parent can then listen to it using `v-on`:
+父组件可以用 `v-on` 监听这个事件：
 
 ```vue-html
 <MyComponent @some-event="callback" />
@@ -35,7 +35,7 @@ Like components and props, event names provide an automatic case transformation.
 Unlike native DOM events, component emitted events do **not** bubble. You can only listen to the events emitted by a direct child component.
 :::
 
-## Event Arguments
+## 事件的参数{#event-argumens}
 
 It's sometimes useful to emit a specific value with an event. For example, we may want the `<BlogPost>` component to be in charge of how much to enlarge the text by. In those cases, we can pass extra arguments to `$emit` to provide this value:
 
@@ -51,13 +51,13 @@ Then, when we listen to the event in the parent, we can use an inline arrow func
 <MyButton @increase-by="(n) => count += n" />
 ```
 
-Or, if the event handler is a method:
+事件处理函数也可以是个方法：
 
 ```vue-html
 <MyButton @increase-by="increaseCount" />
 ```
 
-Then the value will be passed as the first parameter of that method:
+emit 出来的参数值会作为方法的第一个参数传入：
 
 <div class="options-api">
 
